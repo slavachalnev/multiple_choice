@@ -9,7 +9,6 @@ from typing_extensions import Literal
 from torchtyping import TensorType as TT
 from functools import partial
 from IPython.display import HTML, Markdown
-import pysvelte
 from plotly.subplots import make_subplots
 import ipywidgets as widgets
 
