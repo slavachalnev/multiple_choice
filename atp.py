@@ -168,6 +168,7 @@ class Patching:
                 patched_logit_diff = self.metric(patched_logits).detach()
                 patching_result[layer, position] = (patched_logit_diff - self.clean_logit_diff)/(self.corrupted_logit_diff - self.clean_logit_diff)
 
+        self.patch = patching_result
     
     def patch_atp(self):
         
@@ -321,14 +322,17 @@ class Patching:
         widgets.interact(update_plot, layer=layer_selector)
 
     def plot_patch(self, layer=None, what=None, **kwargs):
-        if self.component in ["resid_pre", "resid_post"]:
-            ys = []
-            for i in range(self.model.cfg.n_layers):
-                ys.append(f'RS-pre L{i}')
-                ys.append(f'RS-mid L{i}')
-            ys.append('RS-final')
-        elif self.component in ["attn_all", "attn_q", "attn_k", "attn_v", "attn_z"]:
-            ys = [f'Attn L{i} H{j}' for i in range(self.model.cfg.n_layers) for j in range(self.model.cfg.n_heads)]
+        if self.how == 'ap':
+                ys = [f'L{i}' for i in range(self.model.cfg.n_layers)]
+        else:
+            if self.component in ["resid_pre", "resid_post"]:
+                ys = []
+                for i in range(self.model.cfg.n_layers):
+                    ys.append(f'RS-pre L{i}')
+                    ys.append(f'RS-mid L{i}')
+                ys.append('RS-final')
+            elif self.component in ["attn_all", "attn_q", "attn_k", "attn_v", "attn_z"]:
+                ys = [f'Attn L{i} H{j}' for i in range(self.model.cfg.n_layers) for j in range(self.model.cfg.n_heads)]
         
         if "pattern" in self.component:
             if what == 'top':
